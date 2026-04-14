@@ -1,11 +1,15 @@
 import { userModel } from "../models/user.model.js";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { blacklistTokenModel } from "../models/blacklistToken.model.js";
 
 export const authUser = async (req, res, next) => {
   const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
+  }
+  const blacklistedToken = await blacklistTokenModel.findOne({ token });
+  if (blacklistedToken) {
+    return res.status(401).json({ message: "Invalid token" });
   }
 
   try {
