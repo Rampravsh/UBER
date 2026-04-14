@@ -19,6 +19,7 @@ export const registerUser = async (req, res) => {
   const token = user.generateAuthToken();
   res
     .status(201)
+    .cookie("token", token)
     .json({ token, user, message: "User registered successfully" });
 };
 
@@ -38,5 +39,12 @@ export const loginUser = async (req, res) => {
     return res.status(401).json({ message: "Invalid email or password" });
   }
   const token = user.generateAuthToken();
-  res.status(200).json({ token, user, message: "User logged in successfully" });
+  res
+    .status(200)
+    .cookie("token", token)
+    .json({ token, user, message: "User logged in successfully" });
+};
+
+export const getUserProfile = async (req, res) => {
+  res.status(200).json({ user: req.user });
 };
