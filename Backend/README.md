@@ -79,3 +79,82 @@ Example response:
 - The endpoint expects JSON in the request body.
 - Passwords are hashed before storage.
 - The returned `token` is a JSON Web Token generated with `JWT_SECRET` from environment variables.
+
+## `POST /users/login`
+
+Authenticates an existing user in the system.
+
+### Description
+
+This endpoint authenticates a user using their email and password. Input validation is performed on the request body, and the password is compared against the hashed password stored in the database.
+
+### Request Body
+
+The endpoint expects a JSON object with the following fields:
+
+- `email` (string, required) - User email address. Must be a valid email format.
+- `password` (string, required) - User password. Must be at least 6 characters long.
+
+Example request:
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "secret123"
+}
+```
+
+### Success Response
+
+- Status: `200 OK`
+
+Response body:
+
+```json
+{
+  "token": "<jwt-token>",
+  "user": {
+    "_id": "<user-id>",
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
+    },
+    "email": "john.doe@example.com"
+  },
+  "message": "User logged in successfully"
+}
+```
+
+### Validation Errors
+
+- Status: `400 Bad Request`
+
+Occurs when required fields are missing or invalid.
+
+Example response:
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Please enter a valid email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+### Authentication Errors
+
+- Status: `401 Unauthorized`
+
+Occurs when the email or password is incorrect.
+
+Example response:
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
