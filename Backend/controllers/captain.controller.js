@@ -42,3 +42,6 @@ export const loginCaptain = async (req, res) => {
   res.status(200).json({ message: "Captain logged in successfully", token });
 };
 
+export const getCaptainProfile = async (req, res) => {
+  res.status(200).json({ captain: req.captain });
+};
