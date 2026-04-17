@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectToDB from "./db/db.js";
 import userRoutes from "./routes/user.routes.js";
+import captainRoutes from "./routes/captain.routes.js";
 import cookieParser from "cookie-parser";
 
 
@@ -16,8 +17,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
 app.use("/api/users", userRoutes);
+app.use("/api/captains", captainRoutes);
 
 
 app.get("/", (req, res) => {
