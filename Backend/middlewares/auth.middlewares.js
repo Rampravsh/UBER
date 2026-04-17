@@ -24,3 +24,26 @@ export const authUser = async (req, res, next) => {
     res.status(401).json({ message: "Invalid token" });
   }
 };
+
+export const authCaptain = async (req, res, next) => {
+  const token = req.cookies?.token || req.headers.authorization?.split(" ")[1]; 
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+  const blacklistedToken = await blacklistTokenModel.findOne({ token });
+  if (blacklistedToken) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.captain = await userModel.findById(decoded._id);
+    if (!req.captain) {
+      return res.status(401).json({ message: "Captain not found" });
+    }
+    next();
+  } catch (error) {
+    console.error("Auth Error:", error.message);
+    res.status(401).json({ message: "Invalid token" });
+  }
+};
