@@ -176,7 +176,7 @@ A valid JSON Web Token (JWT) must be included in the request. The token can be p
 
 ### Success Response
 
--   Status: `200 OK`
+- Status: `200 OK`
 
 Response body:
 
@@ -195,7 +195,7 @@ Response body:
 
 ### Authentication Errors
 
--   Status: `401 Unauthorized`
+- Status: `401 Unauthorized`
 
 Occurs when the token is missing, invalid, expired, or the associated user does not exist.
 
@@ -223,7 +223,7 @@ A valid JSON Web Token (JWT) must be included in the request, either via a `toke
 
 ### Success Response
 
--   Status: `200 OK`
+- Status: `200 OK`
 
 Response body:
 
@@ -232,7 +232,8 @@ Response body:
   "message": "User logged out successfully"
 }
 ```
-```
+
+````
 
 ## Captain Registration Endpoint
 
@@ -258,21 +259,21 @@ The captain registration endpoint allows new captains to create an account in th
     "vehiclesType": "car"
   }
 }
-```
+````
 
 ### Request Validation
 
 The endpoint validates all input fields:
 
-| Field | Type | Rules |
-|-------|------|-------|
-| `email` | string | Must be a valid email address |
-| `password` | string | Minimum 6 characters |
-| `firstName` | string | Minimum 3 characters |
-| `lastName` | string | Minimum 3 characters |
-| `vehicle.color` | string | Minimum 3 characters |
-| `vehicle.plate` | string | Minimum 3 characters, must be unique |
-| `vehicle.capacity` | number | Minimum value of 1 |
+| Field                  | Type   | Rules                                             |
+| ---------------------- | ------ | ------------------------------------------------- |
+| `email`                | string | Must be a valid email address                     |
+| `password`             | string | Minimum 6 characters                              |
+| `firstName`            | string | Minimum 3 characters                              |
+| `lastName`             | string | Minimum 3 characters                              |
+| `vehicle.color`        | string | Minimum 3 characters                              |
+| `vehicle.plate`        | string | Minimum 3 characters, must be unique              |
+| `vehicle.capacity`     | number | Minimum value of 1                                |
 | `vehicle.vehiclesType` | string | Must be one of: `"car"`, `"motorcycle"`, `"auto"` |
 
 ### Request Flow
@@ -294,6 +295,7 @@ Database: MongoDB captain collection
 ### Response
 
 #### Success Response (201 Created)
+
 ```json
 {
   "message": "Captain registered successfully",
@@ -302,9 +304,11 @@ Database: MongoDB captain collection
 ```
 
 **Cookie Set:**
+
 - `token`: JWT token (httpOnly, secure in production)
 
 #### Error Response (400 Bad Request)
+
 ```json
 {
   "errors": [
@@ -374,13 +378,13 @@ curl -X POST http://localhost:3000/register \
 
 ### Error Scenarios
 
-| Error | Status | Cause |
-|-------|--------|-------|
-| Validation Error | 400 | Invalid email, weak password, invalid vehicle type, etc. |
-| Missing Fields | 400 | Any required field missing in request body |
-| Duplicate Email | 400 | Email already exists in database |
-| Duplicate Plate | 400 | Vehicle plate already registered |
-| Server Error | 500 | Database or server issues |
+| Error            | Status | Cause                                                    |
+| ---------------- | ------ | -------------------------------------------------------- |
+| Validation Error | 400    | Invalid email, weak password, invalid vehicle type, etc. |
+| Missing Fields   | 400    | Any required field missing in request body               |
+| Duplicate Email  | 400    | Email already exists in database                         |
+| Duplicate Plate  | 400    | Vehicle plate already registered                         |
+| Server Error     | 500    | Database or server issues                                |
 
 ### Notes
 
@@ -388,3 +392,78 @@ curl -X POST http://localhost:3000/register \
 - A JWT token is automatically generated and sent back to the client
 - The token is valid for 7 days from creation
 - The `socketId` field is initially null and used for real-time socket connections later
+
+## Captain Login Endpoint
+
+### Overview
+
+The captain login endpoint authenticates an existing captain in the system.
+
+### Endpoint Details
+
+**Endpoint:** `POST /login`
+
+### Request Body
+
+```json
+{
+  "email": "captain@example.com",
+  "password": "password123"
+}
+```
+
+### Request Validation
+
+The endpoint validates input fields:
+
+| Field      | Type   | Rules                         |
+| ---------- | ------ | ----------------------------- |
+| `email`    | string | Must be a valid email address |
+| `password` | string | Minimum 6 characters          |
+
+### Response
+
+#### Success Response (200 OK)
+
+```json
+{
+  "message": "Captain logged in successfully",
+  "token": "<jwt-token>"
+}
+```
+
+#### Authentication Errors (401 Unauthorized)
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+## Captain Profile Endpoint
+
+### Overview
+
+Retrieves the profile of the currently authenticated captain.
+
+### Endpoint Details
+
+**Endpoint:** `GET /profile`
+
+### Authentication
+
+A valid JSON Web Token (JWT) must be included in the request, either as a `token` cookie or in the `Authorization` header as a Bearer token.
+
+## Captain Logout Endpoint
+
+### Overview
+
+Logs out the currently authenticated captain by clearing the authentication cookie and blacklisting the JWT.
+
+### Endpoint Details
+
+**Endpoint:** `POST /logout`
+
+### Authentication
+
+A valid JSON Web Token (JWT) must be included in the request, either as a `token` cookie or in the `Authorization` header as a Bearer token.
