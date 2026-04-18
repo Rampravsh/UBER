@@ -18,10 +18,10 @@ router.post(
     body("password")
       .isLength({ min: 6 })
       .withMessage("Password must be at least 6 characters long"),
-    body("firstName")
+    body("fullName.firstName")
       .isLength({ min: 3 })
       .withMessage("First name must be at least 3 characters long"),
-    body("lastName")
+    body("fullName.lastName")
       .isLength({ min: 3 })
       .withMessage("Last name must be at least 3 characters long"),
     body("vehicle.color")
@@ -54,6 +54,6 @@ router.post(
 
 router.get("/profile", authCaptain,getCaptainProfile);
 
-router.post("/logout", authCaptain, logoutCaptain);
+router.get("/logout", authCaptain, logoutCaptain);
 
 export default router;

@@ -8,7 +8,7 @@ export const registerCaptain = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { email, password, firstName, lastName, vehicle } = req.body;
+  const { email, password, fullName: { firstName, lastName }, vehicle } = req.body;
   const hashPassword = await captainModel.hashedPassword(password);
   const captain = await createCaptain({
     email,
