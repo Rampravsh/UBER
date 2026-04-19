@@ -1,7 +1,11 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useCaptainData } from "../context/CaptainContext.jsx";
 
 const CaptainSignup = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -10,11 +14,12 @@ const CaptainSignup = () => {
   const [vehiclePlate, setVehiclePlate] = useState("");
   const [vehicleCapacity, setVehicleCapacity] = useState("");
   const [vehicleType, setVehicleType] = useState("");
-  const [captainData, setCaptainData] = useState({});
 
-  const submitHandler = (e) => {
+  const { setCaptain } = useCaptainData();
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setCaptainData({
+    const captainData = {
       fullName: {
         firstName: firstName,
         lastName: lastName,
@@ -25,9 +30,22 @@ const CaptainSignup = () => {
         color: vehicleColor,
         plate: vehiclePlate,
         capacity: vehicleCapacity,
-        vehicleType: vehicleType,
+        vehiclesType: vehicleType,
       },
-    });
+    };
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/captains/register`,
+      captainData,
+    );
+
+    if (response.status === 201) {
+      const data = response.data;
+      setCaptain(data.captain);
+      localStorage.setItem("token", data.token);
+      navigate("/captain-home");
+    }
+
     setFirstName("");
     setLastName("");
     setEmail("");
@@ -97,7 +115,7 @@ const CaptainSignup = () => {
             <div className="w-full md:w-1/2 flex gap-2">
               <input
                 required
-                className="bg-[#eeeeee] flex-grow rounded-lg px-4 py-2 border text-lg placeholder:text-base"
+                className="bg-[#eeeeee] grow rounded-lg px-4 py-2 border text-lg placeholder:text-base"
                 type="text"
                 placeholder="Vehicle Color"
                 value={vehicleColor}
