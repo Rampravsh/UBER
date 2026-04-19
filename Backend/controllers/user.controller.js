@@ -8,7 +8,11 @@ export const registerUser = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { firstName, lastName, email, password } = req.body;
+  const {
+    fullName: { firstName, lastName },
+    email,
+    password,
+  } = req.body;
   const hashedPassword = await userModel.hashedPassword(password);
   const user = await createUser({
     firstName,
@@ -16,12 +20,19 @@ export const registerUser = async (req, res) => {
     email,
     password: hashedPassword,
   });
-  console.log(user);
   const token = user.generateAuthToken();
+
+  const userResponse = user.toObject();
+  delete userResponse.password;
+
   res
     .status(201)
     .cookie("token", token)
-    .json({ token, user, message: "User registered successfully" });
+    .json({
+      token,
+      user: userResponse,
+      message: "User registered successfully",
+    });
 };
 
 export const loginUser = async (req, res) => {
@@ -40,10 +51,18 @@ export const loginUser = async (req, res) => {
     return res.status(401).json({ message: "Invalid email or password" });
   }
   const token = user.generateAuthToken();
+
+  const userResponse = user.toObject();
+  delete userResponse.password;
+
   res
     .status(200)
     .cookie("token", token)
-    .json({ token, user, message: "User logged in successfully" });
+    .json({
+      token,
+      user: userResponse,
+      message: "User logged in successfully",
+    });
 };
 
 export const getUserProfile = async (req, res) => {
