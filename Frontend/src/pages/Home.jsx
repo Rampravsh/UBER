@@ -1,14 +1,18 @@
 import React, { useRef, useState } from "react";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import LocationSearchPannel from "../components/LocationSearchPannel";
+import ChooseVehicle from "../components/ChooseVehicle";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
   const [pannelOpen, setPannelOpen] = useState(false);
+  const [vehiclePannel, setVehiclePannel] = useState(false);
   const pannelRef = useRef(null);
+  const vehiclePannelRef = useRef(null);
 
   const submithandler = (e) => {
     e.preventDefault();
@@ -19,36 +23,56 @@ const Home = () => {
     if (pannelOpen) {
       gsap.to(pannelRef.current, {
         height: "70%",
+        opacity: 1,
         duration: 0.5,
         ease: "power2.out",
       });
     } else {
       gsap.to(pannelRef.current, {
         height: "0%",
+        opacity: 0,
         duration: 0.5,
         ease: "power2.out",
       });
     }
   }, [pannelOpen]);
+  
+  useGSAP(() => {
+    if (vehiclePannel) {
+      gsap.to(vehiclePannelRef.current, {
+        height: "70%",
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.out",
+      });
+    } else {
+      gsap.to(vehiclePannelRef.current, {
+        height: "0%",
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.out",
+      });
+    }
+  }, [vehiclePannel]);
 
   return (
-    <div className="h-screen relative">
+    <div className="h-screen relative overflow-hidden">
       <div>
         <img
-          src="public/uber-logo.png"
+          src="/uber-logo.png"
           alt=""
           className="w-16 absolute top-5 left-5"
         />
         <div className="h-screen w-screen md:w-1/2">
           <img
             className="h-full w-full object-cover"
-            src="public/map_image.webp"
+            src="/map_image.webp"
             alt=""
           />
         </div>
       </div>
       <div className=" absolute top-0 w-full h-screen not-first:flex flex-col justify-end md:justify-center md:w-1/2 md:right-0 md:top-1/2 md:-translate-y-1/2  ">
-        <div className="p-4 h-[30%] bg-white rounded-2xl relative">
+        <div className="p-4 h-[30%] bg-white  relative">
           <h5
             onClick={() => {
               setPannelOpen(!pannelOpen);
@@ -90,9 +114,36 @@ const Home = () => {
             />
           </form>
         </div>
-        <div ref={pannelRef} className="bg-amber-600 ">
-          <LocationSearchPannel />
+        <div ref={pannelRef} className="bg-white overflow-hidden opacity-0  ">
+          <LocationSearchPannel vehiclePannel={vehiclePannel} setVehiclePannel={setVehiclePannel} />
         </div>
+      </div>
+      <div ref={vehiclePannelRef} className="fixed z-10 bottom-0 bg-white w-full p-4 translate-y-full md:justify-center md:w-1/2 md:right-0 md:top-1/2 md:-translate-x-full">
+        <div className="text-2xl font-semibold mb-5">Choose a Vehicle</div>
+
+        <ChooseVehicle
+          vehicleName="UberGo"
+          vehicleImage="/car.webp"
+          vehiclePassengers={4}
+          vehicleTime="2"
+          vehiclePrice={193.2}
+        />
+
+        <ChooseVehicle
+          vehicleName="Moto"
+          vehicleImage="/bike.webp"
+          vehiclePassengers={1}
+          vehicleTime="3"
+          vehiclePrice={290.5}
+        />
+
+        <ChooseVehicle
+          vehicleName="UberAuto"
+          vehicleImage="/auto.webp"
+          vehiclePassengers={3}
+          vehicleTime="5"
+          vehiclePrice={390.75}
+        />
       </div>
     </div>
   );
